@@ -17,8 +17,11 @@ public class GrunnbeløpVerktøy {
     public GrunnbeløpVerktøy() {
         try {
             this.grunnbeløp = new GrunnbeløpAPI().hentGrunnbeløp();
-        } catch (IOException | InterruptedException exception) {
-            System.out.println("Problemer med tilkobling til grunnbeløp API'et" + exception.getMessage());
+        } catch (IOException exception) {
+            throw new IOException("Kunne ikke hente grunnbeløp fra API", exception)
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new IOException("API-kall ble avbrutt", exception);
         }
     }
 
