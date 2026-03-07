@@ -43,13 +43,18 @@ public class DagpengerKalkulator {
         double dagsats = 0;
 
         int arbeidsdagerIÅret = 260;
-        if (harRettigheterTilDagpenger() == true) {
-            if (velgBeregningsMetode() == "SISTE_ÅRSLØNN") {
-                dagsats = Math.ceil(hentÅrslønnVedIndeks(0).hentÅrslønn() / arbeidsdagerIÅret);
-            } else if (velgBeregningsMetode() == "GJENNOMSNITTET_AV_TRE_ÅR") {
-                dagsats = Math.ceil((summerNyligeÅrslønner(3) / 3) / arbeidsdagerIÅret);
-            } else if (velgBeregningsMetode() == "MAKS_ÅRLIG_DAGPENGERGRUNNLAG") {
-                dagsats = Math.ceil(grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag() / arbeidsdagerIÅret);
+        if (harRettigheterTilDagpenger()) {
+            beregningsMetode = velgBeregningsMetode();
+
+            switch(beregningsMetode){
+                case "SISTE_ÅRSLØNN":
+                    return Math.ceil(hentÅrslønnVedIndeks(0).hentÅrslønn() / arbeidsdagerIÅret);
+                case "GJENNOMSNITTET_AV_TRE_ÅR":
+                    return Math.ceil((summerNyligeÅrslønner(3) / 3) / arbeidsdagerIÅret);
+                case "MAKS_ÅRLIG_DAGPENGERGRUNNLAG":
+                    return Math.ceil(grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag() / arbeidsdagerIÅret);
+                default:
+                    return dagsats;
             }
         }
 
@@ -61,15 +66,8 @@ public class DagpengerKalkulator {
      * @return om personen har rett på dagpenger.
      */
     public boolean harRettigheterTilDagpenger() {
-        boolean harRettigheter = false;
-
-        if (summerNyligeÅrslønner(3) >= grunnbeløpVerktøy.hentTotaltGrunnbeløpForGittAntallÅr(3)) {
-            harRettigheter = true;
-        } else if (hentÅrslønnVedIndeks(0).hentÅrslønn() >= grunnbeløpVerktøy.hentMinimumÅrslønnForRettPåDagpenger()) {
-            harRettigheter = true;
-        }
-
-        return harRettigheter;
+        return summerNyligeÅrslønner(3) >= grunnbeløpVerktøy.hentTotaltGrunnbeløpForGittAntallÅr(3)
+            || hentÅrslønnVedIndeks(0).hentÅrslønn() >= grunnbeløpVerktøy.hentMinimumÅrslønnForRettPåDagpenger();
     }
 
     /**
@@ -78,17 +76,16 @@ public class DagpengerKalkulator {
      */
     public String velgBeregningsMetode() {
         String beregningsMetode;
+        double årslønn = hentÅrslønnVedIndeks(0).hentÅrslønn();
 
-        if (hentÅrslønnVedIndeks(0).hentÅrslønn() > (summerNyligeÅrslønner(3) / 3)) {
-           beregningsMetode = "SISTE_ÅRSLØNN";
-           if (hentÅrslønnVedIndeks(0).hentÅrslønn() > grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag()) {
-               beregningsMetode = "MAKS_ÅRLIG_DAGPENGERGRUNNLAG";
-           }
+        if (årslønn > (summerNyligeÅrslønner(3) / 3)) {
+            if (årslønn > grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag()) {
+                return "MAKS_ÅRLIG_DAGPENGERGRUNNLAG";
+            }
+            return "SISTE_ÅRSLØNN";
         } else {
-            beregningsMetode = "GJENNOMSNITTET_AV_TRE_ÅR";
+            return "GJENNOMSNITTET_AV_TRE_ÅR";
         }
-
-        return beregningsMetode;
     }
 
     public void leggTilÅrslønn(Årslønn årslønn) {
@@ -114,9 +111,7 @@ public class DagpengerKalkulator {
         double sumAvNyligeÅrslønner = 0;
 
         if (antallÅrÅSummere <= this.årslønner.size()) {
-            List<Årslønn> subÅrslønnListe = new ArrayList<>(this.årslønner.subList(0, antallÅrÅSummere));
-
-            for (Årslønn årslønn : subÅrslønnListe) {
+            for (Årslønn årslønn : this.årslønner.subList(0, antallÅrÅSummere)) {
                 sumAvNyligeÅrslønner += årslønn.hentÅrslønn();
             }
         }
@@ -130,7 +125,6 @@ public class DagpengerKalkulator {
      * deretter blir registeret reversert.
      */
     public void sorterÅrslønnerBasertPåNyesteÅrslønn() {
-        this.årslønner.sort(Comparator.comparingInt(Årslønn::hentÅretForLønn));
-        Collections.reverse(this.årslønner);
+        this.årslønner.sort(Comparator.comparingInt(Årslønn::hentÅretForLønn).reversed());
     }
 }
