@@ -24,9 +24,9 @@ import java.util.List;
  */
 public class DagpengerKalkulator {
 
-    public final GrunnbeløpVerktøy grunnbeløpVerktøy;
+    private final GrunnbeløpVerktøy grunnbeløpVerktøy;
 
-    public final List<Årslønn> årslønner;
+    private final List<Årslønn> årslønner;
 
     private final int ANTALL_ÅRSLØNNER = 3;
 
@@ -103,7 +103,7 @@ public class DagpengerKalkulator {
      * @param indeks posisjonen til årslønnen.
      * @return årslønnen ved gitt indeks.
      */
-    public Årslønn hentÅrslønnVedIndeks(int indeks) {
+    private Årslønn hentÅrslønnVedIndeks(int indeks) {
         return this.årslønner.get(indeks);
     }
 
@@ -112,7 +112,7 @@ public class DagpengerKalkulator {
      * @param antallÅrÅSummere antall år med årslønner vi vil summere.
      * @return summen av årslønner.
      */
-    public double summerNyligeÅrslønner(int antallÅrÅSummere) {
+    private double summerNyligeÅrslønner(int antallÅrÅSummere) {
         double sumAvNyligeÅrslønner = 0;
 
         if (antallÅrÅSummere <= this.årslønner.size()) {
@@ -129,7 +129,7 @@ public class DagpengerKalkulator {
      * Først blir årslønnene i registeret sortert ut at den eldstre årslønnen skal først i registeret,
      * deretter blir registeret reversert.
      */
-    public void sorterÅrslønnerBasertPåNyesteÅrslønn() {
+    private void sorterÅrslønnerBasertPåNyesteÅrslønn() {
         this.årslønner.sort(Comparator.comparingInt(Årslønn::hentÅretForLønn).reversed());
     }
 }
