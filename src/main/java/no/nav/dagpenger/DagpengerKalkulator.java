@@ -32,7 +32,7 @@ public class DagpengerKalkulator {
 
     private final int ARBEIDSDAGER_I_ÅRET = 260;
 
-    private final enum Beregnings_Metode {
+    public final enum Beregnings_Metode {
         MAKS_ÅRLIG_DAGPENGERGRUNNLAG,
         SISTE_ÅRSLØNN,
         GJENNOMSNITTET_AV_TRE_ÅR
@@ -55,16 +55,16 @@ public class DagpengerKalkulator {
         if (harRettigheterTilDagpenger()) {
 
             switch(velgBeregningsMetode()){
-                case velgBeregningsMetode.GJENNOMSNITTET_AV_TRE_ÅR:
+                case GJENNOMSNITTET_AV_TRE_ÅR:
                     return Math.ceil((summerNyligeÅrslønner(ANTALL_ÅRSLØNNER) / ANTALL_ÅRSLØNNER) / ARBEIDSDAGER_I_ÅRET);
-                case velgBeregningsMetode.SISTE_ÅRSLØNN:
+                case SISTE_ÅRSLØNN:
                     return Math.ceil(hentÅrslønnVedIndeks(0).hentÅrslønn() / ARBEIDSDAGER_I_ÅRET);
-                case velgBeregningsMetode.MAKS_ÅRLIG_DAGPENGERGRUNNLAG:
+                case MAKS_ÅRLIG_DAGPENGERGRUNNLAG:
                     return Math.ceil(grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag() / ARBEIDSDAGER_I_ÅRET);
-                default:
-                    return dagsats;
             }
         }
+
+        return dagsats
     }
 
     /**
@@ -72,7 +72,7 @@ public class DagpengerKalkulator {
      * @return om personen har rett på dagpenger.
      */
     public boolean harRettigheterTilDagpenger() {
-        return summerNyligeÅrslønner(ANTALL_ÅRSLØNNER) >= grunnbeløpVerktøy.hentTotaltGrunnbeløpForGittAntallÅr(Antall_Årslønner)
+        return summerNyligeÅrslønner(ANTALL_ÅRSLØNNER) >= grunnbeløpVerktøy.hentTotaltGrunnbeløpForGittAntallÅr(ANTALL_ÅRSLØNNER)
             || hentÅrslønnVedIndeks(0).hentÅrslønn() >= grunnbeløpVerktøy.hentMinimumÅrslønnForRettPåDagpenger();
     }
 
@@ -80,7 +80,7 @@ public class DagpengerKalkulator {
      * Velger hva som skal være beregnings metode for dagsats ut ifra en person sine årslønner.
      * @return beregnings metode for dagsats.
      */
-    public String velgBeregningsMetode() {
+    public Beregnings_Metode velgBeregningsMetode() {
         double årslønn = hentÅrslønnVedIndeks(0).hentÅrslønn();
 
         if (årslønn > (summerNyligeÅrslønner(ANTALL_ÅRSLØNNER) / ANTALL_ÅRSLØNNER)) {
