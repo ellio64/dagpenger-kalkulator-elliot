@@ -30,14 +30,21 @@ public class GrunnbeløpAPI {
      * Metoden sender en HTTP request og konverterer HTTP responsen til et <code>JSONObject</code>,
      * som så henter dagens grunnbeløp fra JSON objektet.
      * @return dagens grunnbeløp.
-     * @throws IOException
-     * @throws InterruptedException
+     * @throws IOException HTTP statuskode eller at kontakt med APIet feiler
      */
-    public double hentGrunnbeløp() throws IOException, InterruptedException {
-        HttpRequest grunnbeløpSpørring = HttpRequest.newBuilder(URI.create(DOTENV.get("G_API_URL"))).build();
+    public double hentGrunnbeløp() throws IOException {
+        try {
+            HttpRequest grunnbeløpSpørring = HttpRequest.newBuilder(URI.create(DOTENV.get("G_API_URL"))).build();
 
-        HttpResponse<String> grunnbeløpRespons =  this.grunnbeløpHTTPKlient.send(grunnbeløpSpørring, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> grunnbeløpRespons =  this.grunnbeløpHTTPKlient.send(grunnbeløpSpørring, HttpResponse.BodyHandlers.ofString());
 
-        return new JSONObject(grunnbeløpRespons.body()).getDouble("grunnbeløp");
+            if (grunnbeløpRespons.statusCode() != 200){
+                throw new IOException("Uventet statuskode fra GrunnbeløpAPI: " + grunnbeløpRespons.statusCode());
+            }
+
+            return new JSONObject(grunnbeløpRespons.body()).getDouble("grunnbeløp");
+        } catch (IOException exception) {
+            throw new IOException("Kunne ikke hente grunnbeløp fra API", exception);
+        }
     }
 }
