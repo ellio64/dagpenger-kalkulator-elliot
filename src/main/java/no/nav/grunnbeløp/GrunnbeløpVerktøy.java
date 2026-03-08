@@ -5,23 +5,20 @@ import java.io.IOException;
 /**
  * Verktøy med forskjellige hjelpemetoder til å kalkulere forskjellige grunnbeløpsverdier, som
  * bruker i prossesen for å kalkulere hvilken dagsats en person har rett på. Grunnbeløpet brukt
- * i disse metodene hente fra NAV sitt grunnebeløp API.
+ * i disse metodene hente fra NAV sitt grunnbeløp API.
  *
  * @author Emil Elton Nilsen
  * @version 1.0
  */
 public class GrunnbeløpVerktøy {
 
-    private double grunnbeløp;
+    private final double grunnbeløp;
 
-    public GrunnbeløpVerktøy() {
+    public GrunnbeløpVerktøy() throws IOException {
         try {
             this.grunnbeløp = new GrunnbeløpAPI().hentGrunnbeløp();
         } catch (IOException exception) {
-            throw new IOException("Kunne ikke hente grunnbeløp fra API", exception)
-        } catch (InterruptedException exception) {
-            Thread.currentThread().interrupt();
-            throw new IOException("API-kall ble avbrutt", exception);
+            throw new IOException("Kunne ikke hente grunnbeløp fra API", exception);
         }
     }
 

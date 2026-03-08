@@ -4,6 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.InterruptedException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -45,6 +46,8 @@ public class GrunnbeløpAPI {
             return new JSONObject(grunnbeløpRespons.body()).getDouble("grunnbeløp");
         } catch (IOException exception) {
             throw new IOException("Kunne ikke hente grunnbeløp fra API", exception);
+        } catch (InterruptedException exception) {
+            throw new IOException("API-kall ble avbrutt", exception);
         }
     }
 }

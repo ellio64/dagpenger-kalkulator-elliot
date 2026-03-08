@@ -1,10 +1,12 @@
 package no.nav;
 
+import java.io.IOException;
+import java.lang.InterruptedException;
 import no.nav.dagpenger.DagpengerKalkulator;
 import no.nav.årslønn.Årslønn;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, InterruptedException {
         DagpengerKalkulator dagpengerKalkulator = new DagpengerKalkulator();
         dagpengerKalkulator.leggTilÅrslønn(new Årslønn(2023, 500000));
         dagpengerKalkulator.leggTilÅrslønn(new Årslønn(2022, 450000));
