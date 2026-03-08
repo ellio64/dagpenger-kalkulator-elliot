@@ -2,6 +2,8 @@ package no.nav.dagpenger;
 
 import no.nav.grunnbeløp.GrunnbeløpVerktøy;
 import no.nav.årslønn.Årslønn;
+import no.nav.dagpenger.Spesialisering;
+import no.nav.resultatregister.Resultat;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -54,24 +56,22 @@ public class DagpengerKalkulator {
      * er det samme som å ikke ha rett på dagpenger.
      * @return dagsatsen en person har rett på.
      */
-    public double kalkulerDagsats() throws IllegalStateException {
-        double dagsats = 0;
-
+    public Resultat kalkulerDagsats() throws IllegalStateException {
         if (harRettigheterTilDagpenger()) {
 
             switch(velgBeregningsMetode()){
                 case GJENNOMSNITTET_AV_TRE_ÅR:
-                    return Math.ceil((summerNyligeÅrslønner(ANTALL_ÅRSLØNNER) / ANTALL_ÅRSLØNNER) / ARBEIDSDAGER_I_ÅRET);
+                    return new Resultat(Math.ceil((summerNyligeÅrslønner(ANTALL_ÅRSLØNNER) / ANTALL_ÅRSLØNNER) / ARBEIDSDAGER_I_ÅRET), Spesialisering.INNVILGET);
                 case SISTE_ÅRSLØNN:
-                    return Math.ceil(hentÅrslønnVedIndeks(0).hentÅrslønn() / ARBEIDSDAGER_I_ÅRET);
+                    return new Resultat(Math.ceil(hentÅrslønnVedIndeks(0).hentÅrslønn() / ARBEIDSDAGER_I_ÅRET), Spesialisering.INNVILGET);
                 case MAKS_ÅRLIG_DAGPENGERGRUNNLAG:
-                    return Math.ceil(grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag() / ARBEIDSDAGER_I_ÅRET);
+                    return new Resultat(Math.ceil(grunnbeløpVerktøy.hentMaksÅrligDagpengegrunnlag() / ARBEIDSDAGER_I_ÅRET), Spesialisering.INNVILGET_MED_MAKSSATS);
                 default:
                     throw new IllegalStateException("Ukjent beregningsmetode");
             }
         }
 
-        return dagsats;
+        return new Resultat(0, Spesialisering.AVSLAG_FOR_LAV_INNTEKT);
     }
 
     /**
